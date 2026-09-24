@@ -1,0 +1,83 @@
+server:
+  port: ${PORT:${SERVER_PORT:8080}}
+  error:
+    include-stacktrace: never
+    include-message: never
+    include-binding-errors: never
+    include-exception: false
+
+spring:
+  application:
+    name: kodbank
+
+  datasource:
+    url: ${DB_URL:jdbc:mysql://localhost:3306/atm?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC}
+    username: ${DB_USERNAME:root}
+    password: ${DB_PASSWORD:admin}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+      connection-timeout: 10000
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    open-in-view: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQLDialect
+        format_sql: false
+
+  sql:
+    init:
+      mode: always
+      continue-on-error: true
+
+  jackson:
+    default-property-inclusion: non_null
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+  endpoint:
+    health:
+      show-details: never
+      probes:
+        enabled: true
+
+logging:
+  level:
+    root: ${LOG_LEVEL:INFO}
+    com.atm.management: ${APP_LOG_LEVEL:INFO}
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} %-5level [%thread] %logger{36} - %msg%n"
+
+app:
+  jwt:
+    secret: ${JWT_SECRET:atm-management-jwt-secret-key-change-me-in-production-2026-fullstack-conversion-project}
+    expiration-ms: ${JWT_EXPIRATION_MS:28800000}
+    refresh-expiration-ms: ${JWT_REFRESH_EXPIRATION_MS:604800000}
+
+  cors:
+    allowed-origin-patterns: ${CORS_ALLOWED_ORIGINS:http://localhost:*,http://127.0.0.1:*}
+
+  security:
+    max-login-attempts: ${MAX_LOGIN_ATTEMPTS:3}
+    max-withdrawal: ${MAX_WITHDRAWAL:10000}
+
+  account:
+    opening-balance: ${OPENING_BALANCE:0}
+    daily-limit: ${DAILY_LIMIT:50000}
+
+  otp:
+    ttl-seconds: ${OTP_TTL_SECONDS:300}
+    withdraw-threshold: ${OTP_WITHDRAW_THRESHOLD:5000}
+    include-code: ${OTP_INCLUDE_CODE:true}
+
+  admin:
+    username: ${ADMIN_USERNAME:admin}
+    pin: ${ADMIN_PIN:9090}
+    card: ${ADMIN_CARD:9999999999999999}
+    security-answer: ${ADMIN_SECURITY_ANSWER:KodBank}

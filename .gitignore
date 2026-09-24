@@ -1,0 +1,27 @@
+# Java / Maven
+backend/target/
+*.class
+*.jar
+!jar files/*.jar
+
+# Node / Vite
+frontend/node_modules/
+frontend/dist/
+npm-debug.log*
+
+# IDE / OS
+.idea/
+*.iml
+.vscode/
+.metadata/
+*.swp
+.DS_Store
+
+# Env / secrets
+.env
+.env.local
+
+# Eclipse
+backend/.classpath
+backend/.project
+backend/.settings/
