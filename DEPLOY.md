@@ -101,6 +101,7 @@ Tables are created automatically by `schema.sql` on first boot (`CREATE TABLE IF
 
 - Push to `main` → Render **auto-deploys** (`autoDeploy: true` in `render.yaml`).
 - Free instances **spin down** after ~15 min idle; first request takes ~1 min.
+- `.github/workflows/keep-awake.yml` pings `/actuator/health` every 10 min (public repo = free Actions minutes) so the instance stays up. GitHub pauses scheduled runs after 60 days with no repo activity — re-enable under the workflow's **Actions** tab if that happens.
 - When you add SMS/email OTP, set `OTP_INCLUDE_CODE=false`.
 
 ---
