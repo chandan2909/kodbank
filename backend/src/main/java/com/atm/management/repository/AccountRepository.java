@@ -29,4 +29,7 @@ public interface AccountRepository extends JpaRepository<Account, Long> {
     Optional<Account> findByAccountNoForUpdate(@Param("accountNo") String accountNo);
 
     boolean existsByAccountNo(String accountNo);
+
+    @Query("SELECT count(a) > 0 FROM Account a WHERE a.system = 1")
+    boolean existsSystemAccount();
 }

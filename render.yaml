@@ -3,7 +3,10 @@ services:
     name: kodbank
     runtime: docker
     plan: free
-    region: oregon
+    # TiDB DB is in ap-southeast-1 (Singapore) — keep app in same region
+    # to avoid ~180ms cross-ocean SQL latency (was causing 143s startup).
+    # NOTE: Render cannot change region on an existing service — recreate it in Singapore.
+    region: singapore
     autoDeploy: true
     healthCheckPath: /actuator/health
     envVars:
@@ -31,3 +34,5 @@ services:
         value: "true"
       - key: LOG_LEVEL
         value: INFO
+      - key: SPRING_PROFILES_ACTIVE
+        value: prod

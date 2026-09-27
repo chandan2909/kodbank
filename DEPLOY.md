@@ -106,6 +106,41 @@ Tables are created automatically by `schema.sql` on first boot (`CREATE TABLE IF
 
 ---
 
+## 6. Keep it fast and stable (important on Free)
+
+Render gives the app a short window (~1–2 min) to bind its port before the deploy
+fails with `Port scan timeout reached`. Startup budget comes from three places:
+
+| Cost | Where | Fix |
+| ---- | ----- | --- |
+| Hibernate reading DB metadata at boot (~40 s) | `application.yml` | `hibernate.boot.allow_jdbc_metadata_access: false` + explicit `MySQLDialect` |
+| Opening 10 DB connections at boot (~9 s) | Hikari | `minimum-idle: 2`, `maximum-pool-size: 8` |
+| JVM heap capped at ~128 MB → GC thrash | `Dockerfile` | `JAVA_TOOL_OPTIONS` sets `MaxRAMPercentage=50` + `TieredStopAtLevel=1` |
+| Legacy migration table scans every boot | `render.yaml` | `SPRING_PROFILES_ACTIVE=prod` disables `LegacyDataMigrator` |
+
+Watch the deploy log line `Started AtmApplication in N seconds` — it must stay well under
+~60 s or the port scan fails. Once the database is provisioned you can set
+`DB_INIT_MODE=never` in Render to skip re-running `schema.sql` on every boot
+(put it back to `always` after creating a brand new database).
+
+### Put the app and database in the same region
+
+Your TiDB cluster is in **ap-southeast-1 (Singapore)** while Render runs in **Oregon** —
+every SQL round trip costs ~170 ms. Fix (pick one):
+
+- **Recommended:** create a new TiDB Serverless cluster in **AWS us-west-2 (Oregon)**, then
+  update `DB_URL` / `DB_USERNAME` / `DB_PASSWORD` in Render. The app recreates tables on boot.
+- Or recreate the Render service with `region: singapore` (region is fixed at creation) and
+  re-enter its env vars.
+
+Add timeouts to the JDBC URL as well:
+
+```text
+...&serverTimezone=UTC&connectTimeout=10000&socketTimeout=60000
+```
+
+---
+
 ## Local check (optional)
 
 ```bash

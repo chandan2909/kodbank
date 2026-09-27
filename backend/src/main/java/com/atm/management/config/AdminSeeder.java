@@ -62,9 +62,7 @@ public class AdminSeeder implements ApplicationRunner {
     }
 
     private void ensureCashAccount() {
-        boolean cashExists = accountRepository.findAll().stream()
-                .anyMatch(Account::isSystem);
-        if (cashExists) {
+        if (accountRepository.existsSystemAccount()) {
             return;
         }
         Account cash = new Account();

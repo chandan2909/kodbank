@@ -25,6 +25,9 @@ RUN mvn -q -B -DskipTests package
 
 # ---- runtime ----
 FROM eclipse-temurin:26-jre
+# Render free instances have ~512 MB RAM; default JVM heap (25%) is too small
+# and causes GC thrash / slow startup. Bind fast so Render's port scan passes.
+ENV JAVA_TOOL_OPTIONS="-XX:InitialRAMPercentage=50.0 -XX:MaxRAMPercentage=50.0 -XX:TieredStopAtLevel=1 -Djava.security.egd=file:/dev/./urandom"
 WORKDIR /app
 COPY --from=backend /backend/target/*.jar app.jar
 EXPOSE 10000
